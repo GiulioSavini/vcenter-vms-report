@@ -1,0 +1,6 @@
+# Lista vCenter per il report VM
+# Formato: hostname_suffix  IP  username  password
+# Le righe che iniziano con # sono commenti
+
+vcenter-prod.example.com_dc1    192.168.1.10    readonly@vsphere.local    changeme
+vcenter-dr.example.com_dc2      192.168.2.10    readonly@vsphere.local    changeme

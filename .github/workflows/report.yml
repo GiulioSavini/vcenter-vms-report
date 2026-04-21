@@ -1,0 +1,66 @@
+name: VM Report
+
+on:
+  schedule:
+    # Every night at 02:00 UTC
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+    inputs:
+      format:
+        description: "Output format"
+        required: false
+        default: "csv"
+        type: choice
+        options: [csv, json, html]
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  tests:
+    name: Run tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install dev deps
+        run: pip install -r requirements-dev.txt
+      - name: Run tests
+        run: pytest tests/ -v --cov=src --cov-report=term-missing
+
+  report:
+    name: Generate report
+    runs-on: ubuntu-latest
+    # Only run on schedule or manual dispatch
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    needs: tests
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Install deps
+        run: pip install -r requirements.txt
+      - name: Write vcenters_list.txt from secret
+        env:
+          VCENTER_LIST: ${{ secrets.VCENTER_LIST }}
+        run: echo "$VCENTER_LIST" > vcenters_list.txt
+      - name: Run report
+        env:
+          VCENTER_DEFAULT_USER: ${{ secrets.VCENTER_DEFAULT_USER }}
+          VCENTER_DEFAULT_PASSWORD: ${{ secrets.VCENTER_DEFAULT_PASSWORD }}
+          REPORT_FORMAT: ${{ github.event.inputs.format || 'csv' }}
+        run: |
+          python main.py \
+            --format "$REPORT_FORMAT" \
+            --output "vm_report.$REPORT_FORMAT" \
+            --workers 8
+      - name: Upload report as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vm-report-${{ github.run_id }}
+          path: vm_report.*
+          retention-days: 30

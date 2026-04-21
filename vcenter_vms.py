@@ -128,6 +128,11 @@ def collect_from_vcenter(entry):
 
 
 def main():
+    import warnings
+    warnings.warn(
+        "vcenter_vms.py is deprecated. Use `python main.py` instead.",
+        DeprecationWarning, stacklevel=2,
+    )
     listfile = VCENTER_LIST_FILE
     if len(sys.argv) > 1:
         listfile = sys.argv[1]

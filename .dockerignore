@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.pyo
+.env
+vcenters_list.txt
+vm_report.*
+.git/
+tests/
+docs/
+*.egg-info/
+.venv/

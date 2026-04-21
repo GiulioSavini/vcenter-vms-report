@@ -1,0 +1,17 @@
+services:
+  vcenter-report:
+    build: .
+    volumes:
+      - ./data:/app/data
+    environment:
+      - VCENTER_DEFAULT_USER=${VCENTER_DEFAULT_USER:-}
+      - VCENTER_DEFAULT_PASSWORD=${VCENTER_DEFAULT_PASSWORD:-}
+    command:
+      - "--list"
+      - "/app/data/vcenters_list.txt"
+      - "--format"
+      - "html"
+      - "--output"
+      - "/app/data/vm_report.html"
+      - "--workers"
+      - "8"

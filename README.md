@@ -13,7 +13,7 @@
 - **Credenziali sicure**: `.env` o variabili d'ambiente — niente password hardcoded
 - **Filtri CLI**: `--only-on`, `--only-off`, `--no-templates`
 - **Docker**: container pronto all'uso con volume per input/output
-- **GitHub Actions**: esecuzione notturna automatica con upload artifact e test su ogni push
+- **GitHub Actions**: test su ogni push e pull request; report su esecuzione manuale con upload artifact
 
 ---
 
@@ -96,11 +96,15 @@ docker compose up
 
 ## GitHub Actions
 
-Il workflow `.github/workflows/report.yml`:
+Il workflow `.github/workflows/ci.yml`:
 - Esegue i **test** ad ogni push e pull request
-- Genera il **report** ogni notte alle 02:00 UTC (schedule)
-- Permette **esecuzione manuale** con scelta del formato (csv/json/html)
-- Carica il report come **artifact** (retention 30 giorni)
+- Genera il **report** su **esecuzione manuale** (`workflow_dispatch`), con scelta
+  del formato (csv/json/html), e lo carica come **artifact** (retention 30 giorni)
+
+Il report non gira su schedule perche' deve raggiungere un vCenter: un runner
+ospitato da GitHub non ci arriva, quindi una schedulazione notturna produrrebbe
+soltanto un job rosso ogni notte. Per automatizzarlo serve un self-hosted runner
+con accesso di rete ai vCenter elencati nel secret `VCENTER_LIST`.
 
 **Secrets da configurare nel repo:**
 
@@ -165,7 +169,7 @@ vcenter-vms-report/
 ├── data/                    # Volume Docker (escluso da git)
 ├── Dockerfile
 ├── docker-compose.yml
-├── .github/workflows/report.yml
+├── .github/workflows/ci.yml
 ├── requirements.txt
 └── .env.example
 ```

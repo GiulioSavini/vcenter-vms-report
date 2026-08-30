@@ -1,5 +1,7 @@
 # vcenter-vms-report
 
+[![CI](https://github.com/GiulioSavini/vcenter-vms-report/actions/workflows/ci.yml/badge.svg)](https://github.com/GiulioSavini/vcenter-vms-report/actions/workflows/ci.yml)
+
 **Tool Python** per estrarre un inventario completo di **tutte le VM** da uno o più vCenter server. Produce report in CSV, JSON o HTML con dati estesi (CPU, RAM, disco, OS, snapshot) e supporta il confronto con report precedenti (diff/changelog).
 
 ---

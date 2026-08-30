@@ -22,7 +22,11 @@ class DiffResult:
             lines.append(f"  [-] {vm.vcenter} / {vm.name}")
         for old, new in self.changed:
             changes = []
-            for attr in ("state", "ip", "esxi", "os", "cpu_count", "memory_mb", "disk_gb", "snapshot_count"):
+            # Every field compared by VMRecord equality must appear here.
+            # A field that is compared but not listed produces a VM reported as
+            # changed with nothing shown next to it.
+            for attr in ("state", "ip", "esxi", "os", "cpu_count", "memory_mb",
+                         "disk_gb", "is_template", "snapshot_count"):
                 ov, nv = getattr(old, attr), getattr(new, attr)
                 if ov != nv:
                     changes.append(f"{attr}: {ov!r} \u2192 {nv!r}")
